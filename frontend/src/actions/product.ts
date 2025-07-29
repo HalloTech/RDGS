@@ -46,7 +46,7 @@ export const getProducts=async({limit=10,page=1}:{limit:number,page:number})=>{
                 'Content-Type':'application/json'
             }
         })
-
+        // console.log(res);
         
         if(res.status>201){
             throw Error('Unable to create user!')

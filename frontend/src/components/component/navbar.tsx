@@ -28,7 +28,7 @@ export default async function Navbar({}:navbarProps ){
             <div className="flex items-center justify-between w-full">
                 <Link href="/" className="flex items-center gap-2" prefetch={false}>
                     <MountainIcon className="h-6 w-6" />
-                    <span className="text-lg font-bold">VastrWare</span>
+                    <span className="text-lg font-bold">Royal Retail Store</span>
                 </Link>
 
                 <div className="relative md:block flex-1 max-w-lg mx-6 w-full hidden">
