@@ -73,6 +73,9 @@ export async function Productview({productId,category}:{productId:string,categor
       return null
   }
 
+  // Use the category from the product data if not provided in URL
+  const productCategory = category || (product as any).category || 'electronics'
+
   return (
     <div className="md:grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-[1500px] px-4 mx-auto py-6">
 
@@ -349,9 +352,9 @@ export async function Productview({productId,category}:{productId:string,categor
                   </div>
                 </div>
               </div> */}
-              <RelatedProducts _id={productId} category={category}/>
+              <RelatedProducts _id={productId} category={productCategory}/>
 
-              <LoadMoreRelatedProducts category={category}/>
+              <LoadMoreRelatedProducts category={productCategory}/>
             </div>
           </CardContent>
         </Card>

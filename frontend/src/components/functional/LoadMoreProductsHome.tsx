@@ -11,23 +11,29 @@ interface LoadMoreProductsHomeProps{
     
 }
 
-let page=2
-let hasNextPage=true
-
 export default function LoadMoreProductsHome({}:LoadMoreProductsHomeProps ){
     const [productsData,setProductsData]=useState<productData[]>([])
+    const [page, setPage] = useState(2)
+    const [hasNextPage, setHasNextPage] = useState(true)
     const {ref,inView}=useInView()
     console.log(inView)
-
-
 
     const fetchAllProducts=async()=>{
         try {
             const res:productDataGetting=await getProducts({limit:10,page:page})
 
-            console.log(res)
-            setProductsData([...res.products,...productsData])
-            hasNextPage=res.hasNextPage
+            console.log('LoadMore response:', res)
+            
+            // Transform the data to match expected structure
+            const transformedProducts = res?.products?.map(product => ({
+                ...product,
+                name: (product as any).title, // Use title as name
+                images: (product as any).image ? [(product as any).image] : [], // Convert single image to array
+                thumbnail: (product as any).image, // Use image as thumbnail
+            })) || []
+            
+            setProductsData([...transformedProducts,...productsData])
+            setHasNextPage(res.hasNextPage)
             
         } catch (error) {
             console.log(error)
@@ -38,7 +44,7 @@ export default function LoadMoreProductsHome({}:LoadMoreProductsHomeProps ){
     useEffect(()=>{
         if(inView && hasNextPage){
             fetchAllProducts()
-            page++
+            setPage(prev => prev + 1)
         }
     },[inView])
     return(
@@ -50,7 +56,7 @@ export default function LoadMoreProductsHome({}:LoadMoreProductsHomeProps ){
                 {
                     productsData?.map((product,ind)=>{
                     return(
-                        <ProductCard key={product.name} product={product}/>
+                        <ProductCard key={product._id} product={product}/>
                     )
                     })
                 }

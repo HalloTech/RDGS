@@ -41,21 +41,22 @@ export const getProducts=async({limit=10,page=1}:{limit:number,page:number})=>{
     try {
         const res=await fetch(`http://localhost:5000/api/products?limit=${limit}&page=${page}`,{
             method:"GET",
-            cache:'force-cache',
+            cache:'no-store',
             headers:{
                 'Content-Type':'application/json'
             }
         })
-        // console.log(res);
+        console.log('Response status:', res.status);
         
         if(res.status>201){
-            throw Error('Unable to create user!')
+            throw Error('Unable to fetch products!')
         }else{
             const result=await res.json()
-            // console.log(result.products)
+            console.log('API Response:', result)
             return result
         }
     } catch (error:any) {
+        console.error('Fetch error:', error)
         return error.message
     }
 }
@@ -64,7 +65,7 @@ export const getProductById=async({id}:{id:string})=>{
     try {
         const res=await fetch(`http://localhost:5000/api/products/${id}`,{
             method:"GET",
-            cache:'force-cache',
+            cache:'no-store',
             headers:{
                 'Content-Type':'application/json'
             }
@@ -85,23 +86,26 @@ export const getProductById=async({id}:{id:string})=>{
 
 export const getProductsByCategory=async({limit,page,category}:{limit:number,page:number,category:string})=>{
     try {
+        console.log('Fetching category:', category, 'page:', page, 'limit:', limit)
         const res=await fetch(`http://localhost:5000/api/products/category/${category}?limit=${limit}&page=${page}`,{
             method:"GET",
-            cache:'force-cache',
+            cache:'no-store',
             headers:{
                 'Content-Type':'application/json'
             }
         })
 
+        console.log('Category response status:', res.status)
         
         if(res.status>201){
-            throw Error('Error Fetching Prducts!')
+            throw Error('Error Fetching Products!')
         }else{
             const result=await res.json()
-            // console.log(result)
+            console.log('Category API Response:', result)
             return result
         }
     } catch (error:any) {
+        console.error('Category fetch error:', error)
         return error.message
     }
 }
@@ -154,3 +158,24 @@ export const getProductsByQuery=async({limit,page,query}:{limit:number,page:numb
     }
 }
 
+export const getAvailableCategories=async()=>{
+    try {
+        const res=await fetch(`http://localhost:5000/api/products/categories`,{
+            method:"GET",
+            cache:'no-store',
+            headers:{
+                'Content-Type':'application/json'
+            }
+        })
+        if(res.status>201){
+            throw Error('Error fetching categories!')
+        }else{
+            const result=await res.json()
+            console.log('Available categories:', result)
+            return result
+        }
+    } catch (error:any) {
+        console.error('Categories fetch error:', error)
+        return error.message
+    }
+}

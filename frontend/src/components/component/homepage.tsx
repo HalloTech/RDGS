@@ -58,13 +58,22 @@ export default async function Homepage({ user }: { user: any }) {
     limit: 10,
     page: 1,
   });
-  console.log(products?.products);
+  console.log('Raw products response:', products);
+  console.log('Products array:', products?.products);
 
-  const mostSellingProducts = products?.products?.filter((product, ind) => {
+  // Transform the data to match expected structure
+  const transformedProducts = products?.products?.map(product => ({
+    ...product,
+    name: (product as any).title, // Use title as name
+    images: (product as any).image ? [(product as any).image] : [], // Convert single image to array
+    thumbnail: (product as any).image, // Use image as thumbnail
+  })) || [];
+
+  const mostSellingProducts = transformedProducts.filter((product, ind) => {
     return product.most_selling_product;
   });
 
-  const isCarousels = products?.products?.filter(
+  const isCarousels = transformedProducts.filter(
     (product, ind) => product.carousel
   );
 
@@ -86,17 +95,18 @@ export default async function Homepage({ user }: { user: any }) {
                   className="relative w-full h-screen bg-cover bg-center flex items-center"
                   style={{ backgroundImage: `url(${bgImage})` }}
                 >
-                  <div className="text-white p-8 rounded-md max-w-lg ml-20 backdrop-blur-sm">
-                    <h1 className="text-4xl font-bold mb-4">
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-gray-900/50 to-black/60 z-0" />
+                  <div className="relative z-10 text-white p-8 rounded-md max-w-lg ml-20 backdrop-blur-sm animate-fadeInUp">
+                    <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-lg animate-fadeInUp delay-100">
                       Discover the Latest Trends
                     </h1>
-                    <p className="mb-6 text-lg">
-                      Explore our curated collection of fashionable and
-                      high-quality products.
+                    <p className="mb-6 text-xl md:text-2xl font-medium animate-fadeInUp delay-200">
+                      Explore our curated collection of fashionable and high-quality products.
                     </p>
                     <Link
                       href="#"
-                      className="inline-flex items-center justify-center rounded-md bg-white text-black px-6 py-3 font-semibold hover:bg-gray-200 transition"
+                      className="inline-flex items-center justify-center rounded-full bg-white text-black px-8 py-4 font-bold text-lg shadow-lg hover:bg-gray-100 transition animate-fadeInUp delay-300"
                       prefetch={false}
                     >
                       Shop Now
@@ -135,9 +145,9 @@ export default async function Homepage({ user }: { user: any }) {
                       className="w-full h-64 object-cover"
                     />
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">
-                        {product.name}
-                      </h3>
+                                              <h3 className="text-lg font-semibold text-gray-800 mb-2 truncate">
+                          {product.name}
+                        </h3>
                       {/* Optionally add price or rating here */}
                       <p className="text-sm text-gray-500 line-clamp-2">
                         {product.description || "No description available."}
@@ -155,65 +165,167 @@ export default async function Homepage({ user }: { user: any }) {
           <div className="max-w-[1500px] mx-auto">
             <h2 className="text-2xl font-bold mb-6">New Arrivals</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products?.products?.map((product, ind) => {
-                return <ProductCard product={product} />;
+              {transformedProducts?.map((product, ind) => {
+                return <ProductCard key={product._id} product={product} />;
               })}
             </div>
           </div>
         </section>
 
-        <section className="py-12 px-6 md:px-12">
+        {/* Why Shop With Us */}
+        <section className="py-16 px-6 md:px-12 bg-gray-50">
           <div className="max-w-[1500px] mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Popular Categories</h2>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Shop With Us</h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                We're committed to providing you with the best shopping experience possible
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Fast Shipping</h3>
+                <p className="text-gray-600">Free shipping on orders over $50. Get your items delivered in 2-3 business days.</p>
+              </div>
+              <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Quality Guarantee</h3>
+                <p className="text-gray-600">All our products are carefully selected and tested for quality assurance.</p>
+              </div>
+              <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Secure Payment</h3>
+                <p className="text-gray-600">Your payment information is protected with bank-level security encryption.</p>
+              </div>
+              <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">24/7 Support</h3>
+                <p className="text-gray-600">Our customer support team is available around the clock to help you.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Popular Categories */}
+        <section className="py-16 px-6 md:px-12 bg-white">
+          <div className="max-w-[1500px] mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Popular Categories</h2>
+              <p className="text-gray-600 text-lg">Explore our wide range of products</p>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
               <Link
                 href="#"
-                className="bg-muted rounded-md p-4 flex flex-col items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
                 prefetch={false}
               >
-                <ShirtIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">Clothing</span>
+                <ShirtIcon className="h-10 w-10 mb-3 text-gray-700" />
+                <span className="text-sm font-medium text-gray-900">Clothing</span>
               </Link>
               <Link
                 href="#"
-                className="bg-muted rounded-md p-4 flex flex-col items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
                 prefetch={false}
               >
-                <FootprintsIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">Shoes</span>
+                <FootprintsIcon className="h-10 w-10 mb-3 text-gray-700" />
+                <span className="text-sm font-medium text-gray-900">Shoes</span>
               </Link>
               <Link
                 href="#"
-                className="bg-muted rounded-md p-4 flex flex-col items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
                 prefetch={false}
               >
-                <ShoppingBagIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">Bags</span>
+                <ShoppingBagIcon className="h-10 w-10 mb-3 text-gray-700" />
+                <span className="text-sm font-medium text-gray-900">Bags</span>
               </Link>
               <Link
                 href="#"
-                className="bg-muted rounded-md p-4 flex flex-col items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
                 prefetch={false}
               >
-                <WatchIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">Accessories</span>
+                <WatchIcon className="h-10 w-10 mb-3 text-gray-700" />
+                <span className="text-sm font-medium text-gray-900">Accessories</span>
               </Link>
               <Link
                 href="#"
-                className="bg-muted rounded-md p-4 flex flex-col items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
                 prefetch={false}
               >
-                <LaptopIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">Electronics</span>
+                <LaptopIcon className="h-10 w-10 mb-3 text-gray-700" />
+                <span className="text-sm font-medium text-gray-900">Electronics</span>
               </Link>
               <Link
                 href="#"
-                className="bg-muted rounded-md p-4 flex flex-col items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
                 prefetch={false}
               >
-                <HomeIcon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">Home</span>
+                <HomeIcon className="h-10 w-10 mb-3 text-gray-700" />
+                <span className="text-sm font-medium text-gray-900">Home</span>
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="py-16 px-6 md:px-12 bg-gray-900 text-white">
+          <div className="max-w-[1500px] mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold mb-4">What Our Customers Say</h2>
+              <p className="text-gray-300 text-lg">Don't just take our word for it</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-gray-800 p-6 rounded-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+                    <span className="text-black font-bold text-lg">S</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Sarah Johnson</h4>
+                    <p className="text-gray-400 text-sm">Verified Buyer</p>
+                  </div>
+                </div>
+                <p className="text-gray-300">"Amazing quality products and fast delivery. I love shopping here!"</p>
+              </div>
+              <div className="bg-gray-800 p-6 rounded-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+                    <span className="text-black font-bold text-lg">M</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Mike Chen</h4>
+                    <p className="text-gray-400 text-sm">Verified Buyer</p>
+                  </div>
+                </div>
+                <p className="text-gray-300">"Great customer service and the best prices I've found online."</p>
+              </div>
+              <div className="bg-gray-800 p-6 rounded-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+                    <span className="text-black font-bold text-lg">E</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Emma Davis</h4>
+                    <p className="text-gray-400 text-sm">Verified Buyer</p>
+                  </div>
+                </div>
+                <p className="text-gray-300">"The return process was so easy. Highly recommend this store!"</p>
+              </div>
             </div>
           </div>
         </section>
@@ -221,23 +333,51 @@ export default async function Homepage({ user }: { user: any }) {
         {/* Load More Content */}
         <LoadMoreProductsHome />
       </main>
-      <footer className="bg-primary text-primary-foreground py-6 px-6">
-        <div className="max-w-[1500px] mx-auto flex flex-col md:flex-row items-center justify-between">
-          <p className="text-sm">
-            &copy; 2024 Acme Store. All rights reserved.
-          </p>
-          <nav className="flex items-center gap-4 mt-4 md:mt-0">
-            <Link href="#" className="hover:underline" prefetch={false}>
-              Terms of Service
-            </Link>
-            <Link href="#" className="hover:underline" prefetch={false}>
-              Privacy Policy
-            </Link>
-            <Link href="#" className="hover:underline" prefetch={false}>
-              Contact Us
-            </Link>
-          </nav>
+      <footer className="bg-gray-900 text-gray-200 py-10 px-6 mt-10 border-t border-gray-800">
+        <div className="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* About */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <HomeIcon className="h-7 w-7 text-white" />
+              <span className="font-bold text-xl">RoyalStore</span>
+            </div>
+            <p className="text-sm mb-4">Your one-stop shop for the latest trends and best deals. Shop with confidence and style!</p>
+            <div className="flex gap-3 mt-4">
+              <a href="#" className="hover:text-white"><svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.59-2.47.7a4.3 4.3 0 0 0 1.88-2.37 8.59 8.59 0 0 1-2.72 1.04A4.28 4.28 0 0 0 16.11 4c-2.37 0-4.29 1.92-4.29 4.29 0 .34.04.67.11.99C7.69 9.13 4.07 7.38 1.64 4.7c-.37.64-.58 1.39-.58 2.19 0 1.51.77 2.84 1.94 3.62-.72-.02-1.39-.22-1.98-.55v.06c0 2.11 1.5 3.87 3.5 4.27-.36.1-.74.16-1.13.16-.28 0-.54-.03-.8-.08.54 1.68 2.12 2.9 3.99 2.93A8.6 8.6 0 0 1 2 19.54c-.29 0-.57-.02-.85-.05A12.13 12.13 0 0 0 8.29 21.5c7.55 0 11.68-6.26 11.68-11.68 0-.18-.01-.36-.02-.54A8.18 8.18 0 0 0 22.46 6z" /></svg></a>
+              <a href="#" className="hover:text-white"><svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 4.41 3.6 8.07 8.24 8.93.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.54-1.37-1.32-1.74-1.32-1.74-1.08-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.78 1.3 3.46.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.97 0-1.32.47-2.39 1.23-3.23-.12-.3-.53-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.05.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.23 0 4.64-2.8 5.67-5.48 5.97.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.36 20.07 24 16.41 24 12c0-5.5-4.46-9.96-9.96-9.96z" /></svg></a>
+              <a href="#" className="hover:text-white"><svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M21.54 7.2c-.13-.47-.52-.81-.99-.81h-2.13c-.47 0-.86.34-.99.81l-1.7 6.13c-.13.47.09.97.52 1.17.43.2.97.09 1.17-.34l.34-.61h2.36l.34.61c.2.43.74.54 1.17.34.43-.2.65-.7.52-1.17l-1.7-6.13zm-2.13 5.13l.7-2.52.7 2.52h-1.4zM12 2C6.48 2 2 6.48 2 12c0 4.41 3.59 8 8 8s8-3.59 8-8c0-5.52-4.48-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" /></svg></a>
+            </div>
+          </div>
+          {/* Customer Service */}
+          <div>
+            <h3 className="font-semibold text-lg mb-3 text-white">Customer Service</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="hover:text-white">Help Center</a></li>
+              <li><a href="#" className="hover:text-white">Returns</a></li>
+              <li><a href="#" className="hover:text-white">Shipping Info</a></li>
+              <li><a href="#" className="hover:text-white">Track Order</a></li>
+            </ul>
+          </div>
+          {/* Newsletter */}
+          <div>
+            <h3 className="font-semibold text-lg mb-3 text-white">Newsletter</h3>
+            <p className="text-sm mb-2">Sign up for exclusive offers and updates.</p>
+            <form className="flex gap-2 mt-2">
+              <input type="email" placeholder="Your email" className="rounded-l px-3 py-2 text-black focus:outline-none" />
+              <button type="submit" className="bg-white text-black px-4 py-2 rounded-r font-semibold hover:bg-gray-100 transition">Subscribe</button>
+            </form>
+          </div>
+          {/* Payments */}
+          <div>
+            <h3 className="font-semibold text-lg mb-3 text-white">We Accept</h3>
+            <div className="flex gap-3 mt-2">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" className="h-8 w-auto bg-white rounded p-1" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard" className="h-8 w-auto bg-white rounded p-1" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/PayPal_Logo_2007.png" alt="PayPal" className="h-8 w-auto bg-white rounded p-1" />
+            </div>
+          </div>
         </div>
+        <div className="text-center text-xs text-gray-500 mt-8">&copy; 2024 RoyalStore. All rights reserved.</div>
       </footer>
     </div>
   );

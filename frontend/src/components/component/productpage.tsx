@@ -26,82 +26,55 @@ To read more about using these font, please visit the Next.js documentation:
 // "use client"
 
 import { JSX, SVGProps } from "react"
-import { getProductsByCategoryAndQuery } from "@/actions/product"
+import { getProductsByCategoryAndQuery, getProductsByCategory } from "@/actions/product"
 import {  productDataGetting } from "@/types/product"
 import ProductCard from "../functional/ProductCard"
 import FunctionalPagination from "../functional/FunctionalPagination"
 
 export async function SearchPage({category,query,page}:{category:string,query:string,page:number}) {
-  console.log(42,category,query,page)
-  const products = [
-    {
-      id: 1,
-      image: "/placeholder.svg",
-      title: "Wireless Headphones",
-      price: 79.99,
-      rating: 4.5,
-      category: "Electronics",
-    },
-    {
-      id: 2,
-      image: "/placeholder.svg",
-      title: "Leather Backpack",
-      price: 59.99,
-      rating: 4.2,
-      category: "Bags",
-    },
-    {
-      id: 3,
-      image: "/placeholder.svg",
-      title: "Outdoor Camping Gear",
-      price: 99.99,
-      rating: 4.8,
-      category: "Outdoors",
-    },
-    {
-      id: 4,
-      image: "/placeholder.svg",
-      title: "Stylish Sunglasses",
-      price: 29.99,
-      rating: 4.3,
-      category: "Accessories",
-    },
-    {
-      id: 5,
-      image: "/placeholder.svg",
-      title: "Ergonomic Office Chair",
-      price: 149.99,
-      rating: 4.6,
-      category: "Furniture",
-    },
-    {
-      id: 6,
-      image: "/placeholder.svg",
-      title: "Smart Home Hub",
-      price: 89.99,
-      rating: 4.4,
-      category: "Electronics",
-    },
-    {
-      id: 7,
-      image: "/placeholder.svg",
-      title: "Fitness Tracker Watch",
-      price: 69.99,
-      rating: 4.7,
-      category: "Wearables",
-    },
-    {
-      id: 8,
-      image: "/placeholder.svg",
-      title: "Luxury Throw Blanket",
-      price: 79.99,
-      rating: 4.9,
-      category: "Home",
-    },
-  ]
+  console.log('SearchPage called with:', {category, query, page})
+  
+  // Use getProductsByCategory for category filtering, getProductsByCategoryAndQuery for search with query
+  const queryProducts:productDataGetting = query 
+    ? await getProductsByCategoryAndQuery({limit:6,page:page,query:query,category})
+    : await getProductsByCategory({limit:6,page:page,category})
 
-  const queryProducts:productDataGetting=await getProductsByCategoryAndQuery({limit:6,page:page,query:query,category})
+  console.log('Category products response:', queryProducts)
 
+  // Transform the data to match expected structure
+  const transformedProducts = queryProducts?.products?.map(product => ({
+    ...product,
+    name: (product as any).title, // Use title as name
+    images: (product as any).image ? [(product as any).image] : [], // Convert single image to array
+    thumbnail: (product as any).image, // Use image as thumbnail
+  })) || []
+
+  // Check if we got an error or no products
+  if (typeof queryProducts === 'string') {
+    return (
+      <section className="bg-muted py-12 px-6 md:px-12">
+        <div className="max-w-[1500px] mx-auto">
+          <h2 className="text-2xl font-bold mb-6">Category: {category}</h2>
+          <div className="text-center py-8">
+            <p className="text-red-500">Error: {queryProducts}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (!transformedProducts || transformedProducts.length === 0) {
+    return (
+      <section className="bg-muted py-12 px-6 md:px-12">
+        <div className="max-w-[1500px] mx-auto">
+          <h2 className="text-2xl font-bold mb-6">Category: {category}</h2>
+          <div className="text-center py-8">
+            <p>No products found in this category</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <>
@@ -112,7 +85,7 @@ export async function SearchPage({category,query,page}:{category:string,query:st
                 <h2 className="text-2xl font-bold mb-6">Category: {category}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {
-                    queryProducts?.products?.map((product,ind)=>{
+                    transformedProducts?.map((product,ind)=>{
                     return(
                         <ProductCard key={product._id} product={product}/>
                     )

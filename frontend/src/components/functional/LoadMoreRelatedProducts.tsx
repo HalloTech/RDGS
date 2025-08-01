@@ -16,6 +16,11 @@ let hasNextPage=true
 let totalPages=0
 
 export default function LoadMoreRelatedProducts({category}:LoadMoreRelatedProductsProps ){
+    // Don't render if category is undefined
+    if (!category) {
+        return null
+    }
+
     const [productsData,setProductsData]=useState<productData[]>([])
     const {ref,inView}=useInView()
     console.log(inView)

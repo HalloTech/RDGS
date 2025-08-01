@@ -22,7 +22,7 @@ export default async function Navbar({}:navbarProps ){
         carts=await getAllCarts({userId:user.id})
     }
 
-    const categories=['Sarees', 'Lehenga', 'Suite', 'Gowns', 'Laungery & Garments', 'Thaan kapda', 'Froks']
+    const categories=['Sarees', 'Lehenga', 'Suite', 'Gowns', 'Laungery & Garments', 'Thaan kapda', 'Froks', 'electronics', 'jewelery', "men's clothing", "women's clothing"]
     return(
         <header className="bg-primary text-primary-foreground py-4 px-6 flex flex-col justify-center items-center gap-4 w-full ">
             <div className="flex items-center justify-between w-full">

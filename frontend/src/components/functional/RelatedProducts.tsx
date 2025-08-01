@@ -8,6 +8,11 @@ interface RelatedProductsProps{
 }
 
 export default async function RelatedProducts({category,_id}:RelatedProductsProps ){
+    // Don't fetch if category is undefined
+    if (!category) {
+        return null
+    }
+
     const relatedProducts:productDataGetting= await getProductsByCategory({limit:10,page:1,category})
 
     // console.log(relatedProducts)
