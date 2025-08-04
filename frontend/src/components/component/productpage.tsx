@@ -26,20 +26,38 @@ To read more about using these font, please visit the Next.js documentation:
 // "use client"
 
 import { JSX, SVGProps } from "react"
-import { getProductsByCategoryAndQuery, getProductsByCategory } from "@/actions/product"
+import { getProductsByCategory, getProductsByCategoryAndQuery, getProductsByQuery } from "@/actions/product"
 import {  productDataGetting } from "@/types/product"
 import ProductCard from "../functional/ProductCard"
 import FunctionalPagination from "../functional/FunctionalPagination"
+import { PackageIcon, AlertCircle } from "lucide-react"
 
 export async function SearchPage({category,query,page}:{category:string,query:string,page:number}) {
   console.log('SearchPage called with:', {category, query, page})
   
-  // Use getProductsByCategory for category filtering, getProductsByCategoryAndQuery for search with query
-  const queryProducts:productDataGetting = query 
-    ? await getProductsByCategoryAndQuery({limit:6,page:page,query:query,category})
-    : await getProductsByCategory({limit:6,page:page,category})
+  let queryProducts: productDataGetting;
+  let searchType = '';
 
-  console.log('Category products response:', queryProducts)
+  // Determine search type and fetch products accordingly
+  if (query && category) {
+    // Search within specific category
+    queryProducts = await getProductsByCategoryAndQuery({limit: 12, page: page, query: query, category});
+    searchType = `Search results for "${query}" in ${category}`;
+  } else if (query && !category) {
+    // Search across all products
+    queryProducts = await getProductsByQuery({limit: 12, page: page, query: query});
+    searchType = `Search results for "${query}"`;
+  } else if (!query && category) {
+    // Browse category
+    queryProducts = await getProductsByCategory({limit: 12, page: page, category});
+    searchType = `Products in ${category}`;
+  } else {
+    // Default: show all products
+    queryProducts = await getProductsByQuery({limit: 12, page: page, query: ''});
+    searchType = 'All Products';
+  }
+
+  console.log('Search results:', queryProducts)
 
   // Transform the data to match expected structure
   const transformedProducts = queryProducts?.products?.map(product => ({
@@ -49,55 +67,84 @@ export async function SearchPage({category,query,page}:{category:string,query:st
     thumbnail: (product as any).image, // Use image as thumbnail
   })) || []
 
-  // Check if we got an error or no products
+  // Check if we got an error
   if (typeof queryProducts === 'string') {
     return (
-      <section className="bg-muted py-12 px-6 md:px-12">
-        <div className="max-w-[1500px] mx-auto">
-          <h2 className="text-2xl font-bold mb-6">Category: {category}</h2>
-          <div className="text-center py-8">
-            <p className="text-red-500">Error: {queryProducts}</p>
-          </div>
+      <div className="p-8">
+        <div className="text-center py-12">
+          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Search Error</h2>
+          <p className="text-red-500 text-lg mb-6">{queryProducts}</p>
+          <p className="text-gray-600">Please try again with different search terms.</p>
         </div>
-      </section>
+      </div>
     )
   }
 
+  // No products found
   if (!transformedProducts || transformedProducts.length === 0) {
     return (
-      <section className="bg-muted py-12 px-6 md:px-12">
-        <div className="max-w-[1500px] mx-auto">
-          <h2 className="text-2xl font-bold mb-6">Category: {category}</h2>
-          <div className="text-center py-8">
-            <p>No products found in this category</p>
+      <div className="p-8">
+        <div className="text-center py-12">
+          <PackageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">No Products Found</h2>
+          <p className="text-gray-600 text-lg mb-6">
+            {query 
+              ? `We couldn't find any products matching "${query}"`
+              : `No products available in ${category}`
+            }
+          </p>
+          <div className="space-y-4">
+            <p className="text-gray-500">Try these suggestions:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {['Sarees', 'Lehenga', 'Electronics', 'Jewelry', 'Fashion', "men's clothing", "women's clothing"].map((term) => (
+                <a
+                  key={term}
+                  href={`/search?query=${encodeURIComponent(term)}`}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 transition-colors duration-200"
+                >
+                  {term}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
-      </section>
+      </div>
     )
   }
 
   return (
-    <>
-      
+    <div className="p-6">
+      {/* Search Stats */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+        <div className="flex items-center gap-6 text-sm text-gray-600">
+          <span className="flex items-center gap-2">
+            <PackageIcon className="h-4 w-4" />
+            {transformedProducts.length} product{transformedProducts.length !== 1 ? 's' : ''} found
+          </span>
+          {queryProducts.totalPages > 1 && (
+            <span>Page {queryProducts.currentPage} of {queryProducts.totalPages}</span>
+          )}
+        </div>
+      </div>
 
-        <section className="bg-muted py-12 px-6 md:px-12">
-            <div className="max-w-[1500px] mx-auto">
-                <h2 className="text-2xl font-bold mb-6">Category: {category}</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {
-                    transformedProducts?.map((product,ind)=>{
-                    return(
-                        <ProductCard key={product._id} product={product}/>
-                    )
-                    })
-                }
-                </div>
-                <FunctionalPagination currentPage={queryProducts.currentPage} totalPages={queryProducts.totalPages} />
-            </div>
-        </section>
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+        {transformedProducts?.map((product, ind) => (
+          <ProductCard key={product._id} product={product}/>
+        ))}
+      </div>
 
-
-    </>
+      {/* Pagination */}
+      {queryProducts.totalPages > 1 && (
+        <div className="flex justify-center pt-6 border-t border-gray-200">
+          <FunctionalPagination 
+            currentPage={queryProducts.currentPage} 
+            totalPages={queryProducts.totalPages} 
+          />
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -119,7 +166,6 @@ function StarIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
 
 function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
