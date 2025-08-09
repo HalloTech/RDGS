@@ -1,160 +1,88 @@
 'use client'
 
-import { productData } from "@/types/product"
-import { Button } from "../ui/button"
-import { Card, CardContent } from "../ui/card"
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { addProductToCart } from "@/actions/cart"
-import { getUserData } from "@/actions/auth"
-import toast from "react-hot-toast"
 import { useState } from "react"
+import { Card } from "../ui/card"
+import { Button } from "../ui/button"
 import { ShoppingCart, Loader2 } from "lucide-react"
 
-interface ProductCardProps{
-    product:productData
-}
+// Mock: replace these with real logic/props/hooks as needed
+const OFFER = "51% OFF"
+const sizes = ["M", "L", "XL", "XXL"] // or from props/product, e.g. product.sizes || []
+const discountPrice = (price: number) => (price * 0.49).toFixed(0) // example
 
-export default function ProductCard({product}:ProductCardProps ){
-    const pathname = usePathname()
-    const {replace} = useRouter()
-    const searchParams = useSearchParams()
-    const router = useRouter()
-    const [isAddingToCart, setIsAddingToCart] = useState(false)
+export default function ProductCard({ product }) {
+  // ... put your hooks/state for cart logic here if you want quick add
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
 
-    const handleProductClick = () => {
-        const params = new URLSearchParams(searchParams)
-        params.set('category', product.category)
-        params.delete('query')
-        params.delete('page')
-
-        replace(`/product-view/${product._id}?${params.toString()}`)
-    }
-
-    const addToCart = async () => {
-        if (isAddingToCart) return; // Prevent multiple clicks
-        
-        setIsAddingToCart(true)
-        try {
-            const user = await getUserData()
-            
-            if (!user) {
-                toast.error('Please login first to add to cart!')
-                router.push('/auth')
-                return
-            }
-
-            const result = await addProductToCart({
-                userId: user.id,
-                productId: product._id,
-                quantity: 1
-            })
-
-            if (result.success) {
-                toast.success(`${product.name} added to cart successfully!`)
-                // Optionally refresh the page or update cart count
-                window.location.reload()
-            } else {
-                toast.error(result.error || 'Failed to add product to cart')
-            }
-            
-        } catch (error: any) {
-            console.error('Error adding to cart:', error)
-            toast.error(error.message || 'Failed to add product to cart')
-        } finally {
-            setIsAddingToCart(false)
-        }
-    }
-    
-    return(
-        <Card 
-            onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                handleProductClick()
-            }} 
-            key={product._id}
-            className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
+  return (
+    <Card className="relative w-full max-w-[320px] mx-auto group rounded-xl shadow-md hover:shadow-xl transition cursor-pointer overflow-hidden bg-white">
+      {/* OFFER BADGE */}
+      <div className="absolute left-3 top-3 z-10">
+        <span className="bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+          {OFFER}
+        </span>
+      </div>
+      {/* PRODUCT IMAGE */}
+      <div
+        className="w-full aspect-[3/4] bg-gray-50 flex items-center justify-center overflow-hidden"
+        style={{ minHeight: 260, maxHeight: 340 }}
+      >
+        <img
+          src={product.images?.[0]}
+          alt={product.name}
+          className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      </div>
+      {/* CARD BODY */}
+      <div className="py-4 px-5 flex flex-col gap-2">
+        <div className="text-gray-800 font-semibold text-base leading-tight truncate mb-1">
+          {product.name}
+        </div>
+        {/* SIZES */}
+        <div className="flex gap-1 mb-2">
+          {sizes.map(size => (
+            <span
+              key={size}
+              className="rounded-full border bg-white text-xs font-semibold px-3 py-0.5 text-gray-700 shadow-sm"
+            >
+              {size}
+            </span>
+          ))}
+        </div>
+        {/* PRICES */}
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-lg font-bold text-green-700">
+            ₹{discountPrice(product.price)}
+          </span>
+          <span className="text-sm line-through text-gray-400 font-medium">
+            ₹{product.price}
+          </span>
+        </div>
+        {/* ADD TO CART BUTTON */}
+        <Button
+          className="mt-2 w-full bg-gray-900 hover:bg-gray-800 text-white rounded-full font-semibold flex items-center justify-center py-2"
+          onClick={e => {
+            e.preventDefault()
+            setIsAddingToCart(true)
+            // your add to cart code here
+            setTimeout(() => setIsAddingToCart(false), 1200)
+          }}
+          disabled={isAddingToCart}
         >
-            <div className="relative">
-                <img
-                    src={product.images[0]}
-                    width={300}
-                    height={300}
-                    alt={product.name}
-                    className="rounded-t-md object-contain w-full aspect-square cursor-pointer group-hover:scale-105 transition-transform duration-300"
-                />
-                {/* Quick Add to Cart Overlay */}
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <Button
-                        onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            addToCart()
-                        }}
-                        disabled={isAddingToCart}
-                        className="bg-white text-gray-900 hover:bg-gray-100 border-2 border-gray-200"
-                    >
-                        {isAddingToCart ? (
-                            <>
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Adding...
-                            </>
-                        ) : (
-                            <>
-                                <ShoppingCart className="h-4 w-4 mr-2" />
-                                Quick Add
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </div>
-            
-            <CardContent className="p-4">
-                <h3 className="text-lg font-semibold mb-2 overflow-hidden" style={{
-                    display: '-webkit-box',
-                    lineClamp: 1,
-                    'WebkitLineClamp': 1,
-                    'WebkitBoxOrient': 'vertical'
-                }}>
-                    {product.name}
-                </h3>
-                
-                <p className="text-muted-foreground mb-4 overflow-hidden" style={{
-                    display: '-webkit-box',
-                    lineClamp: 3,
-                    'WebkitLineClamp': 3,
-                    'WebkitBoxOrient': 'vertical'
-                }}>
-                    {product.description}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                    <span className="font-bold text-lg text-green-600">
-                        ${product.price}
-                    </span>
-                    <Button 
-                        onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            addToCart()
-                        }}
-                        disabled={isAddingToCart}
-                        className="bg-gray-900 hover:bg-gray-800 text-white"
-                    >
-                        {isAddingToCart ? (
-                            <>
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Adding...
-                            </>
-                        ) : (
-                            <>
-                                <ShoppingCart className="h-4 w-4 mr-2" />
-                                Add to Cart
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-    )
+          {isAddingToCart ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-1" />
+              Adding...
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-4 h-4 mr-1" />
+              Add to Cart
+            </>
+          )}
+        </Button>
+      </div>
+    </Card>
+  )
 }

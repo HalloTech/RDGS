@@ -97,7 +97,7 @@ export default function SearchBar({}:SearchBarProps ){
                             type="search" 
                             name="query" 
                             id="query"
-                            placeholder="Search for products, brands, categories..."
+                            placeholder="Search for products..."
                             className={`pl-12 pr-12 py-3 rounded-xl border-2 transition-all duration-200 text-base ${
                                 isFocused 
                                     ? 'border-gray-900 shadow-lg shadow-gray-200' 

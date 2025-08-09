@@ -66,20 +66,6 @@ export function Products() {
       price: 39.99,
       stock: 100,
     },
-    {
-      id: 4,
-      name: "Turbo Blender",
-      description: "High-powered blender for smoothies and more",
-      price: 79.99,
-      stock: 30,
-    },
-    {
-      id: 5,
-      name: "Comfort Slippers",
-      description: "Cozy and supportive slippers for indoor wear",
-      price: 24.99,
-      stock: 75,
-    },
   ]
 
   const router=useRouter()

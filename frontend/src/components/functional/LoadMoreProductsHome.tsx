@@ -40,38 +40,11 @@ export default function LoadMoreProductsHome({}:LoadMoreProductsHomeProps ){
         }
     }
 
-
     useEffect(()=>{
         if(inView && hasNextPage){
             fetchAllProducts()
             setPage(prev => prev + 1)
         }
     },[inView])
-    return(
-        <>
-            <section className="bg-muted py-12 px-6 md:px-12">
-            <div className="max-w-[1500px] mx-auto">
-                <h2 className="text-2xl font-bold mb-6">Explore More</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {
-                    productsData?.map((product,ind)=>{
-                    return(
-                        <ProductCard key={product._id} product={product}/>
-                    )
-                    })
-                }
-                </div>
-            </div>
-            </section>
-            
-            <div ref={ref} className=" w-full py-4 justify-center items-center flex">
-                {
-                    hasNextPage?<Loader size={25} className=" animate-spin"/>: 
 
-                    <p>You reacch the end...</p>
-
-                }
-            </div>
-        </>
-    )
 }
