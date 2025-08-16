@@ -69,8 +69,10 @@ export async function getUserData() {
     const token=cookie.get('token')
     if(token){
         const userData=decodeJWT(token.value)
+        console.log('User data from token:', userData)
         return userData
     }else{
+        console.log('No token found')
         return null
     }
 }

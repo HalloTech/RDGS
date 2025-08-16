@@ -21,23 +21,30 @@ exports.caculateTaxAmount = order => {
 
     order.totalTax = 0;
     if (order.products && order.products.length > 0) {
-      order.products.map(item => {
+      order.products.forEach(item => {
         const price = item.purchasePrice || (item?.product?.price ?? 0);
         const quantity = item.quantity;
         item.totalPrice = price * quantity;
         item.purchasePrice = price;
 
+        // Only calculate tax for non-cancelled items
         if (item.status !== 'Cancelled') {
-          if (item.product?.taxable && item.priceWithTax === 0) {
-            const taxAmount = price * (taxRate / 100) * 100;
+          // Check if item has a product with taxable property
+          const isTaxable = item.product?.taxable !== undefined ? item.product.taxable : true;
+          
+          if (isTaxable) {
+            // Calculate tax amount
+            const taxAmount = price * taxRate;
             item.totalTax = parseFloat(
               Number((taxAmount * quantity).toFixed(2))
             );
 
             order.totalTax += item.totalTax;
           } else {
-            order.totalTax += item.totalTax;
+            item.totalTax = 0;
           }
+        } else {
+          item.totalTax = 0;
         }
 
         item.priceWithTax = parseFloat(
@@ -46,19 +53,8 @@ exports.caculateTaxAmount = order => {
       });
     }
 
-    const hasCancelledItems = order.products.filter(
-      item => item.status === 'Cancelled'
-    );
-
-    if (hasCancelledItems.length > 0) {
-      order.total = this.caculateOrderTotal(order);
-    }
-
-    const currentTotal = this.caculateOrderTotal(order);
-
-    if (currentTotal !== order.total) {
-      order.total = this.caculateOrderTotal(order);
-    }
+    // Recalculate total to ensure it's correct
+    order.total = this.caculateOrderTotal(order);
 
     order.totalWithTax = order.total + order.totalTax;
     order.total = parseFloat(Number(order.total.toFixed(2)));
@@ -68,6 +64,7 @@ exports.caculateTaxAmount = order => {
     order.totalWithTax = parseFloat(Number(order.totalWithTax.toFixed(2)));
     return order;
   } catch (error) {
+    console.error('Error calculating tax amount:', error);
     return order;
   }
 };

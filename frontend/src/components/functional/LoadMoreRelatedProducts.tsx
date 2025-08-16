@@ -22,53 +22,49 @@ export default function LoadMoreRelatedProducts({category}:LoadMoreRelatedProduc
     }
 
     const [productsData,setProductsData]=useState<productData[]>([])
+    const [loading, setLoading] = useState(false)
     const {ref,inView}=useInView()
-    console.log(inView)
-
-
 
     const fetchAllProducts=async()=>{
+        if (loading) return;
+        
+        setLoading(true);
         try {
             const res:productDataGetting=await getProductsByCategory({limit:10,page:page,category})
 
-            console.log(res)
-            setProductsData([...res.products,...productsData])
+            setProductsData(prev => [...prev, ...res.products])
             hasNextPage=res.hasNextPage
             totalPages=res.totalPages
-
+            page++
         } catch (error:any) {
             console.log(error)
             alert(error.message)
+        } finally {
+            setLoading(false)
         }
     }
 
-
     useEffect(()=>{
-        console.log(page)
-        if(inView && hasNextPage){
+        if(inView && hasNextPage && !loading){
             fetchAllProducts()
-            page++
         }
-    },[inView])
+    },[inView, hasNextPage, loading])
+    
     return(
-        <>
-            
-            {
-                productsData?.map((product,ind)=>{
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {productsData?.map((product,ind)=>{
                 return(
                     <ProductCard key={product._id} product={product}/>
                 )
-                })
-            }
+            })}
             
-            <div ref={ref} className=" w-full py-4 justify-center items-center flex">
-                {
-                    (hasNextPage)?<Loader size={25} className=" animate-spin"/>: 
-
-                    <p>You reacch the end...</p>
-
-                }
+            <div ref={ref} className="col-span-full flex justify-center py-4">
+                {loading ? (
+                    <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+                ) : hasNextPage ? null : (
+                    <p className="text-gray-500">You've reached the end...</p>
+                )}
             </div>
-        </>
+        </div>
     )
 }

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Product = require("../Models/ProductSchema")
 const multer = require("multer");
-const {uploadToS3} =require("../utility/S3UtilityforImageUpload");
+const { uploadToGridFS, getImageUrl } = require("../utility/GridFSUtility");
 const auth = require('../MiddleWare/auth');
 const role = require('../MiddleWare/role');
+const mongoose = require('mongoose');
 
 
 
@@ -76,7 +77,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       500:
  *         description: Error creating product
  */
-router.post('/' , upload.array('images[]', 7), async (req, res) => {
+router.post('/' , auth, role.check('admin'), upload.array('images[]', 7), async (req, res) => {
   try {
     let {
       name,
@@ -115,15 +116,26 @@ router.post('/' , upload.array('images[]', 7), async (req, res) => {
     let imageUrls = [];
     let thumbnail
     if (req.files && req.files.length > 0) {
+      // Generate a temporary product ID for image uploads
+      const tempProductId = new mongoose.Types.ObjectId();
+      
       const uploadPromises = req.files.map(async(file) => {
-        if(file.originalname!='thumbnail'){
-          return uploadToS3(file)
+        try {
+          if(file.originalname !== 'thumbnail'){
+            const result = await uploadToGridFS(file, tempProductId);
+            return getImageUrl(result.fileId);
+          } else {
+            const result = await uploadToGridFS(file, tempProductId);
+            thumbnail = getImageUrl(result.fileId);
+            return null;
+          }
+        } catch (error) {
+          console.error('Error uploading file:', error);
+          throw error;
         }
-        thumbnail=await uploadToS3(file)
-        return null
       });
       imageUrls = await Promise.all(uploadPromises)
-      imageUrls=imageUrls.filter((item)=>item!==null);
+      imageUrls = imageUrls.filter((item) => item !== null);
     }
 
     // console.log('THUMBNAIL',thumbnail)
@@ -312,7 +324,7 @@ router.get('/category/:category' ,  async (req, res) => {
 
 
 
-  router.put('/update/:id', upload.array('images[]', 7), async (req, res) => {
+  router.put('/update/:id', auth, role.check('admin'), upload.array('images[]', 7), async (req, res) => {
     try {
       const { id } = req.params;
       const {  ...updateData } = JSON.parse(req.body.data);
@@ -344,15 +356,23 @@ router.get('/category/:category' ,  async (req, res) => {
       let thumbnail;
       if (req.files && req.files.length > 0) {
         const uploadPromises = req.files.map(async (file) => {
-          if (file.originalname !== 'thumbnail') {
-            return uploadToS3(file);
+          try {
+            if (file.originalname !== 'thumbnail') {
+              const result = await uploadToGridFS(file, id);
+              return getImageUrl(result.fileId);
+            } else {
+              const result = await uploadToGridFS(file, id);
+              thumbnail = getImageUrl(result.fileId);
+              return null;
+            }
+          } catch (error) {
+            console.error('Error uploading file:', error);
+            throw error;
           }
-          thumbnail = await uploadToS3(file);
-          return null;
         });
         imageUrls = await Promise.all(uploadPromises);
         imageUrls = imageUrls.filter((item) => item !== null);
-        updateData.images = [...updateData.prevImgs,...imageUrls];
+        updateData.images = [...(updateData.prevImgs || []), ...imageUrls];
         if(thumbnail){
           updateData.thumbnail = thumbnail;
         }
@@ -382,7 +402,7 @@ router.get('/category/:category' ,  async (req, res) => {
   });
   
 
-  router.patch('/deactivate/:id' ,  async (req, res) => {
+  router.patch('/deactivate/:id' , auth, role.check('admin'), async (req, res) => {
     try {
       const { id } = req.params;
   
@@ -428,7 +448,7 @@ router.get('/category/:category' ,  async (req, res) => {
     }
   });
 
-  router.patch('/bulk-update' ,  async (req, res) => {
+  router.patch('/bulk-update' , auth, role.check('admin'), async (req, res) => {
     try {
       const updates = req.body; // Expecting an array of update objects with product ID and fields to update
   
@@ -546,6 +566,7 @@ router.get('/category/:category' ,  async (req, res) => {
 
   router.delete(
     '/delete/:id',
+    auth, role.check('admin'),
     async (req, res) => {
       try {
         const product = await Product.deleteOne({ _id: req.params.id });
@@ -562,5 +583,16 @@ router.get('/category/:category' ,  async (req, res) => {
       }
     }
   );
+
+// Serve product images from GridFS
+router.get('/image/:fileId', async (req, res) => {
+  try {
+    const { serveImageFromGridFS } = require('../utility/GridFSUtility');
+    await serveImageFromGridFS(req, res);
+  } catch (error) {
+    console.error('Error serving image:', error);
+    res.status(500).json({ message: 'Error serving image' });
+  }
+});
 
 module.exports = router;

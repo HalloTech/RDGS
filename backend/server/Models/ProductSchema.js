@@ -53,8 +53,8 @@ const productSchema = new mongoose.Schema({
     },
     combination_price: {
       type: Number,
-      min: 0
-    }
+      min: 0
+    }
   }],
   isAvailable: {
     type: Boolean,

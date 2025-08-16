@@ -132,16 +132,16 @@ export function promotionsanddiscounts() {
       expirationDate: "",
     })
   }
-  const handleEditPromotion = (id, updates) => {
+  const handleEditPromotion = (id: number, updates: any) => {
     setPromotions(promotions.map((p) => (p.id === id ? { ...p, ...updates } : p)))
   }
-  const handleEditDiscount = (id, updates) => {
+  const handleEditDiscount = (id: number, updates: any) => {
     setDiscounts(discounts.map((d) => (d.id === id ? { ...d, ...updates } : d)))
   }
-  const handleDeactivatePromotion = (id) => {
+  const handleDeactivatePromotion = (id: number) => {
     setPromotions(promotions.map((p) => (p.id === id ? { ...p, active: false } : p)))
   }
-  const handleDeactivateDiscount = (id) => {
+  const handleDeactivateDiscount = (id: number) => {
     setDiscounts(discounts.map((d) => (d.id === id ? { ...d, active: false } : d)))
   }
   return (
@@ -206,14 +206,15 @@ export function promotionsanddiscounts() {
             </div>
             <div>
               <Label htmlFor="discountType">Discount Type</Label>
-              <Select
+              <select
                 id="discountType"
                 value={newPromotion.discountType}
-                onValueChange={(e) => setNewPromotion({ ...newPromotion, discountType: e.target.value })}
+                onChange={(e) => setNewPromotion({ ...newPromotion, discountType: e.target.value })}
+                className="w-full border rounded px-3 py-2"
               >
                 <option value="percentage">Percentage</option>
                 <option value="amount">Amount</option>
-              </Select>
+              </select>
             </div>
             <div>
               <Label htmlFor="discountValue">Discount Value</Label>
@@ -242,14 +243,15 @@ export function promotionsanddiscounts() {
             </div>
             <div>
               <Label htmlFor="discountType">Discount Type</Label>
-              <Select
+              <select
                 id="discountType"
                 value={newDiscount.discountType}
-                onValueChange={(e) => setNewDiscount({ ...newDiscount, discountType: e.target.value })}
+                onChange={(e) => setNewDiscount({ ...newDiscount, discountType: e.target.value })}
+                className="w-full border rounded px-3 py-2"
               >
                 <option value="percentage">Percentage</option>
                 <option value="amount">Amount</option>
-              </Select>
+              </select>
             </div>
             <div>
               <Label htmlFor="discountValue">Discount Value</Label>

@@ -32,7 +32,12 @@ const {
         console.log(res)
         if(res!=='Login successfully!') throw Error(res)
         toast.success(res)
-        router.push('/')
+        // Check if admin user
+        if (data.email === 'admin@gmail.com') {
+            router.push('/admin/dashboard');
+        } else {
+            router.push('/');
+        }
     } catch (error:any) {
         toast.error(error.message)
     }
@@ -51,12 +56,17 @@ const {
         return
     }
     try {
-        const res=await signUp({username:data.username,email:data.email,password:data.password})
+        const res = await signUp({ username: data.username, email: data.email, password: data.password })
         console.log(res)
-        if(!res) throw Error('Unable to signup!')
+        if (!res) throw Error('Unable to signup!')
         toast.success(res)
-        router.push('/')
-    } catch (error:any) {
+        // Check if admin user
+        if (data.email === 'admin@gmail.com') {
+            router.push('/admin/dashboard');
+        } else {
+            router.push('/');
+        }
+    } catch (error: any) {
         toast.error(error)
     }
   }

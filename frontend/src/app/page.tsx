@@ -7,18 +7,14 @@ import { redirect } from "next/navigation";
 // import { useRouter } from "next/navigation";
 
 export default async function Home() {
-  // const {userData}=useAuth()
-  // const router=useRouter()
   const session=await getUserData()
-  // console.log(session)
 
-    // console.log(session?.role)
-    if(session?.role=='admin'){
-        redirect('/dashboard')
-    }
+  if(session?.role=='admin'){
+    redirect('/dashboard')
+  }
 
   return (
-    <div className=" overflow-hidden">
+    <div>
       <Navbar/>
       <Homepage user={session}/>
     {/* <Landingpage userData={session}/> */}

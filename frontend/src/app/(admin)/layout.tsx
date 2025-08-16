@@ -10,20 +10,15 @@ interface layoutProps{
 }
 
 export default async function layout({children}:layoutProps ){
-    const session=await getUserData()
+    // ...existing code...
 
-    
-    if(session.role=='customer'){
-        redirect('/')
-    }
-    
-    return(
-        <div className=' w-full lg:flex justify-center items-start gap-1 relative'>
-            <Sidebar/>
+    return (
+        <div className='w-full lg:flex justify-center items-start gap-1 relative'>
+            <Sidebar />
             <div className="w-full">
-                <AdminNavbar/>
+                <AdminNavbar />
                 {children}
             </div>
         </div>
-    )
+    );
 }

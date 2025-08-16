@@ -32,8 +32,7 @@ router.post('/signup',
         password,
         username,
         confirmPassword,
-        // role: email === 'admin@example.com' ? 'admin' : 'customer'
-        role: email == 'ali@ali.com' ? 'admin' : 'customer'
+        role: email === process.env.ADMIN_EMAIL ? 'admin' : 'customer'
       });
 
       await user.save();
@@ -90,7 +89,6 @@ router.post('/login',
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        console.log("validationResult Error");
         return res.status(400).json({ errors: errors.array() });
       }
 

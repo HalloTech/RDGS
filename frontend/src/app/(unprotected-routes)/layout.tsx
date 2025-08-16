@@ -3,22 +3,21 @@ import Navbar from "@/components/component/navbar"
 import { redirect } from "next/navigation"
 import { ReactNode } from "react"
 
-
 interface layoutProps{
     children:ReactNode
 }
 
 export default async function layout({children}:layoutProps ){
-    const session = await getUserData();
+    const session=await getUserData()
 
-    // Only check role if session exists
-    if (session && session.role === 'admin') {
-        redirect('/dashboard');
+    // console.log(session.role)
+    if(session?.role=='admin'){
+        redirect('/dashboard')
     }
-    return (
-        <div className='overflow-hidden'>
-            <Navbar />
+    return(
+        <div className=' overflow-hidden'>
+            <Navbar/>
             {children}
         </div>
-    );
+    )
 }

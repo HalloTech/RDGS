@@ -10,14 +10,17 @@ const server = http.createServer(app);
 const UserRoutes = require("./Routes/UserRoutes");
 const productRoutes = require('./Routes/ProductRoutes')
 const cartRoutes = require('./Routes/CartRoutes');
+const guestCartRoutes = require('./Routes/GuestCartRoutes');
 const addressRoutes = require('./Routes/AddressRoutes');
 const orderRoutes = require('./Routes/OrderRoutes');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const corsOptions = {
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: process.env.NODE_ENV === 'production' 
+      ? process.env.FRONTEND_URL || 'https://yourdomain.com'
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
     optionsSuccessStatus: 204,
   };
@@ -26,9 +29,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 app.use((req, res, next) => {	// <- Serves req time and cookies
-	
 	req.requestTime = new Date().toISOString();
-	if (req.cookies) console.log(req.cookies);
 	next();
 });
 
@@ -72,6 +73,7 @@ app.get('/api-docs', swaggerUi.setup(specs, { explorer: true }));
 app.use('/api/users', UserRoutes);
 app.use('/api/products', productRoutes)
 app.use('/api/cart' , cartRoutes);
+app.use('/api/guest-cart' , guestCartRoutes);
 app.use('/api/address' , addressRoutes);
 app.use('/api/orders' , orderRoutes);
 

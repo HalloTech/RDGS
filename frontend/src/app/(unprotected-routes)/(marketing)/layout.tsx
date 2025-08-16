@@ -8,16 +8,15 @@ interface layoutProps{
 }
 
 export default async function layout({children}:layoutProps ){
-    const session=await getUserData()
+    const session = await getUserData();
 
-    // console.log(session.role)
-    if(session.role=='admin'){
-        redirect('/dashboard')
+    // Only check role if session exists
+    if (session && session.role === 'admin') {
+        redirect('/dashboard');
     }
-    return(
-        <div className=' overflow-hidden'>
-            <Navbar/>
+    return (
+        <div className='overflow-hidden'>
             {children}
         </div>
-    )
+    );
 }

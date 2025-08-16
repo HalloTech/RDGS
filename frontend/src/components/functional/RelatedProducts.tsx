@@ -17,23 +17,20 @@ export default async function RelatedProducts({category,_id}:RelatedProductsProp
 
     // console.log(relatedProducts)
     return(
-        <>
-            {/* <section className="py-12 px-6 md:px-12">
+        <section className="py-12 px-6 md:px-12">
             <div className="max-w-[1500px] mx-auto">
                 <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"> */}
-                {relatedProducts?.products?.map((product,ind)=>{
-                    if(product._id==_id){
-                        return null
-                    }
-                    return(
-                    <ProductCard key={product._id} product={product}/>
-                    )
-                })}
-                
-                {/* </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {relatedProducts?.products?.map((product,ind)=>{
+                        if(product._id==_id){
+                            return null
+                        }
+                        return(
+                            <ProductCard key={product._id} product={product}/>
+                        )
+                    })}
+                </div>
             </div>
-            </section> */}
-        </>
+        </section>
     )
 }
