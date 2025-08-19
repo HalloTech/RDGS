@@ -34,7 +34,7 @@ const {
         toast.success(res)
         // Check if admin user
         if (data.email === 'admin@gmail.com') {
-            router.push('/admin/dashboard');
+            router.push('/dashboard');
         } else {
             router.push('/');
         }
@@ -62,7 +62,7 @@ const {
         toast.success(res)
         // Check if admin user
         if (data.email === 'admin@gmail.com') {
-            router.push('/admin/dashboard');
+            router.push('/(admin)/dashboard');
         } else {
             router.push('/');
         }

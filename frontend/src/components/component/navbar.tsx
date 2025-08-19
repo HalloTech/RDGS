@@ -140,50 +140,47 @@ export default function Navbar() {
     );
   };
 
+  // Responsive mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
   return (
     <header
-  className="bg-white shadow-lg border-b border-gray-100 select-none" style={{ position: "sticky", top: 0, zIndex: 9999 }}
->
-
-      {/* MAIN ROW: LOGO - SEARCH - ICONS */}
-      <div className="flex justify-between items-center py-2 px-4 max-w-7xl mx-auto">
+      className="bg-white shadow-lg border-b border-gray-100 select-none sticky top-0 z-50"
+    >
+      {/* MAIN ROW: LOGO - SEARCH - ICONS (desktop), logo + menu button (mobile) */}
+      <div className="flex items-center justify-between py-2 px-2 sm:px-4 max-w-7xl mx-auto w-full">
         {/* Logo */}
         <Link
-  href="/"
-  className="flex-shrink-0 flex items-center gap-3 group"
-  prefetch={false}
-  aria-label="Home"
->
-  <div className=" rounded-lg transition duration-300 bg-gradient-to-r from-gray-900 to-gray-700 group-hover:from-gray-800 group-hover:to-gray-600">
-    <Image
-      src="/images/royal_logo.png" // replace with your actual logo path
-      alt="Royal DG Mart Logo"
-      width={150}
-      height={10}
-      className="object-contain"
-    />
-  </div>
-</Link>
+          href="/"
+          className="flex-shrink-0 flex items-center gap-2 group"
+          prefetch={false}
+          aria-label="Home"
+        >
+          <div className="rounded-lg transition duration-300 bg-gradient-to-r from-gray-900 to-gray-700 group-hover:from-gray-800 group-hover:to-gray-600">
+            <Image
+              src="/images/royal_logo.png"
+              alt="Royal DG Mart Logo"
+              width={120}
+              height={10}
+              className="object-contain w-[100px] sm:w-[120px]"
+            />
+          </div>
+        </Link>
         {/* Search Bar (desktop only) */}
-        <div className="hidden lg:block flex-1 px-8">
+        <div className="hidden lg:block flex-1 px-4 sm:px-8">
           <SearchBar />
         </div>
-
-        {/* Icons */}
-        <div className="flex gap-3 items-center ml-6">
-          {/* Home Icon */}
+        {/* Icons (desktop only) */}
+        <div className="hidden lg:flex gap-2 sm:gap-3 items-center ml-2 sm:ml-6">
           <Link href="/" className="rounded-full hover:bg-gray-100 p-2 transition" title="Home" prefetch={false}>
             <HomeIcon className="w-6 h-6 text-gray-700" aria-hidden="true" />
             <span className="sr-only">Home</span>
           </Link>
-          
-          {/* WhatsApp Icon */}
           <a href="https://wa.me/919999999999" className="rounded-full hover:bg-gray-100 p-2 transition" title="WhatsApp" target="_blank" rel="noopener noreferrer">
             <Phone className="w-6 h-6 text-gray-700" aria-hidden="true" />
             <span className="sr-only">WhatsApp</span>
           </a>
-
-          {/* Profile Icon */}
           <Link href="/profile" className="rounded-full hover:bg-gray-100 p-1.5 transition" title="Account" prefetch={false}>
             <Avatar className="h-8 w-8 bg-gray-100 border border-gray-300">
               <AvatarImage src="/placeholder-user.jpg" alt={`${user?.username}'s avatar`} />
@@ -193,14 +190,10 @@ export default function Navbar() {
             </Avatar>
             <span className="sr-only">User Profile</span>
           </Link>
-
-          {/* About Us Icon */}
           <Link href="/about" title="About Us" className="rounded-full hover:bg-gray-100 p-2 transition" prefetch={false}>
             <Info className="w-6 h-6 text-gray-700" aria-hidden="true" />
             <span className="sr-only">About Us</span>
           </Link>
-
-          {/* Cart Icon with badge */}
           <Link href="/cart" className="rounded-full hover:bg-gray-100 p-2 transition relative" title="Cart" prefetch={false}>
             <ShoppingCart className="w-6 h-6 text-gray-700" aria-hidden="true" />
             {cartItemCount > 0 && (
@@ -211,16 +204,73 @@ export default function Navbar() {
             <span className="sr-only">Shopping Cart with {cartItemCount} items</span>
           </Link>
         </div>
+        {/* Mobile menu button (mobile only) */}
+        <button
+          className="p-2 rounded-full hover:bg-gray-100 transition lg:hidden"
+          aria-label="Open menu"
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+        </button>
       </div>
 
-      {/* CATEGORIES NAVIGATION (scrollable horizontal bar) */}
-      <nav className="w-full border-t border-gray-100 bg-white">
+      {/* All menu content except logo in the menu drawer (mobile only) */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-end justify-end lg:hidden">
+          <div className="bg-white w-full max-w-xs h-full shadow-lg flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b">
+              <span className="font-bold text-lg">Menu</span>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-full hover:bg-gray-100 transition" aria-label="Close menu">
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+            <div className="p-4 border-b">
+              <SearchBar />
+            </div>
+            <nav className="flex flex-col gap-2 p-4 overflow-y-auto">
+              {/* Icons */}
+              <Link href="/" className="flex items-center gap-2 text-gray-800 font-semibold" prefetch={false}>
+                <HomeIcon className="w-5 h-5" /> Home
+              </Link>
+              <a href="https://wa.me/919999999999" className="flex items-center gap-2 text-gray-800 font-semibold" target="_blank" rel="noopener noreferrer">
+                <Phone className="w-5 h-5" /> WhatsApp
+              </a>
+              <Link href="/profile" className="flex items-center gap-2 text-gray-800 font-semibold" prefetch={false}>
+                <Avatar className="h-6 w-6 bg-gray-100 border border-gray-300">
+                  <AvatarImage src="/placeholder-user.jpg" alt={`${user?.username}'s avatar`} />
+                  <AvatarFallback className="bg-gray-200 text-gray-700 font-semibold">
+                    {user?.username?.[0]?.toUpperCase() || <User className="w-4 h-4" />}
+                  </AvatarFallback>
+                </Avatar>
+                Profile
+              </Link>
+              <Link href="/about" className="flex items-center gap-2 text-gray-800 font-semibold" prefetch={false}>
+                <Info className="w-5 h-5" /> About Us
+              </Link>
+              <Link href="/cart" className="flex items-center gap-2 text-gray-800 font-semibold relative" prefetch={false}>
+                <ShoppingCart className="w-5 h-5" /> Cart
+                {cartItemCount > 0 && (
+                  <span className="ml-2 bg-red-600 text-white text-xs rounded-full px-2 py-1 font-bold select-none">
+                    {cartItemCount > 99 ? "99+" : cartItemCount}
+                  </span>
+                )}
+              </Link>
+              {/* Categories */}
+              <div className="border-t pt-4 mt-4">
+                {navCategories.map((cat) => (
+                  <div key={cat}>{renderCategoryLink(cat)}</div>
+                ))}
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
+      {/* Desktop categories navigation bar */}
+      <nav className="w-full border-t border-gray-100 bg-white hidden lg:block">
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide px-2 whitespace-nowrap py-1">
           {navCategories.map(renderCategoryLink)}
         </div>
       </nav>
-
-      {/* You can add mobile menu/search here if needed */}
     </header>
   );
 }

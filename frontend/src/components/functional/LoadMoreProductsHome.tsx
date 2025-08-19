@@ -55,9 +55,15 @@ export default function LoadMoreProductsHome({}:LoadMoreProductsHomeProps ){
             <div className="max-w-[1500px] mx-auto">
                 <h2 className="text-2xl font-bold mb-6">More Products</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {productsData.map((product) => (
-                        <ProductCard key={product._id} product={product} />
-                    ))}
+                    {productsData.length > 0 ? (
+                        productsData.map((product) => (
+                            <ProductCard key={product._id} product={product} />
+                        ))
+                    ) : (
+                        <div className="col-span-4 text-center py-12 text-gray-400 text-lg font-semibold">
+                            No more products found. Please check your product data or API response.
+                        </div>
+                    )}
                 </div>
                 {loading && (
                     <div className="flex justify-center mt-8">
