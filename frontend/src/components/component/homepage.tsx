@@ -44,7 +44,7 @@ export default async function Homepage({ user }: { user: any }) {
       <main className="flex-1">
         {/* Main Carousel - Infinite Loop & Responsive */}
         <Carousel
-          className="w-full h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[90vh] xl:h-screen"
+          className="w-full h-[20vh] sm:h-[60vh] md:h-[50vh] lg:h-[70vh] xl:h-screen"
           autoScroll
           autoScrollInterval={3000}
           loop
@@ -203,17 +203,119 @@ export default async function Homepage({ user }: { user: any }) {
           </div>
         </section>
 
-        {/* Explore Featured Categories Carousel */}
+       
+        {/* Instagram Section */}
+        <section className="py-16 px-4 sm:px-8 lg:px-12 bg-gradient-to-br from-pink-50 to-purple-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center mr-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.266.058 1.85.25 2.42.49a4.92 4.92 0 0 1 2.13 1.84c.58.82.77 1.4.83 2.42.06 1.266.07 1.646.07 4.85s-.01 3.584-.07 4.85c-.06 1.02-.25 1.6-.83 2.42a4.92 4.92 0 0 1-1.84 2.13c-.82.58-1.4.77-2.42.83-1.266.06-1.646.07-4.85.07s-3.584-.01-4.85-.07c-1.02-.06-1.6-.25-2.42-.83a4.92 4.92 0 0 1-2.13-1.84c-.58-.82-.77-1.4-.83-2.42-.06-1.266-.07-1.646-.07-4.85s.01-3.584.07-4.85c.06-1.02.25-1.6.83-2.42a4.92 4.92 0 0 1 1.84-2.13c.82-.58 1.4-.77 2.42-.83 1.266-.06 1.646-.07 4.85-.07M12 0C8.74 0 8.33.015 7.05.073 5.77.13 4.87.32 4.05.64c-.82.32-1.5.79-2.13 1.42C1.29 2.7 0.82 3.37.5 4.19.18 5 .015 5.9.015 7.18.015 8.46 0 8.87 0 12s.015 3.54.073 4.82c.058 1.28.25 2.18.57 3 .32.82.79 1.5 1.42 2.13.63.63 1.31 1.1 2.13 1.42.82.32 1.72.51 3 .57 1.28.058 1.69.073 4.95.073s3.67-.015 4.95-.073c1.28-.058 2.18-.25 3-.57.82-.32 1.5-.79 2.13-1.42.63-.63 1.1-1.31 1.42-2.13.32-.82.51-1.72.57-3 0-1.28.073-1.69.073-4.95s-.015-3.67-.073-4.95c-.058-1.28-.25-2.18-.57-3-.32-.82-.79-1.5-1.42-2.13-.63-.63-1.31-1.1-2.13-1.42-.82-.32-1.72-.51-3-.57C15.67.015 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zm0 10.2a4.04 4.04 0 1 1 0-8.08 4.04 4.04 0 0 1 0 8.08zm6.41-10.8a1.44 1.44 0 1 0 0-2.88 1.44 1.44 0 0 0 0 2.88z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                  Follow us on Instagram
+                </h2>
+              </div>
+              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+                Stay updated with our latest collections, style tips, and
+                behind-the-scenes moments
+              </p>
+            </div>
+            
+
+            {/* Instagram Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {/* Instagram posts with real images and captions */}
+              {[
+                {
+                  img: "/images/Screenshot 2025-08-24 at 10.47.24 AM.png",
+                  title: "Festive Saree Style",
+                  desc: "Celebrating tradition with a modern twist.",
+                  tag: "#FestiveFashion"
+                },
+                {
+                  img: "/images/Screenshot 2025-08-24 at 10.47.52 AM.png",
+                  title: "Bridal Elegance",
+                  desc: "A moment to remember in our bridal collection.",
+                  tag: "#BridalLook"
+                },
+                {
+                  img: "/images/Screenshot 2025-08-24 at 10.48.58 AM.png",
+                  title: "Summer Vibes",
+                  desc: "Light, breezy, and beautiful for every day.",
+                  tag: "#SummerStyle"
+                },
+                {
+                  img: "/images/Screenshot 2025-08-24 at 10.59.37 AM.png",
+                  title: "Classic Beauty",
+                  desc: "Timeless saree looks for every occasion.",
+                  tag: "#ClassicSaree"
+                }
+              ].map((post, idx) => (
+                <div
+                  key={idx}
+                  className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <img
+                    src={post.img}
+                    alt={post.title}
+                    className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <div className="text-white">
+                      <h3 className="font-bold text-lg mb-1">{post.title}</h3>
+                      <p className="text-sm opacity-90">{post.desc}</p>
+                    </div>
+                  </div>
+                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 text-pink-700 rounded-full px-3 py-1 font-bold text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {post.tag}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+
+
+            {/* Instagram CTA */}
+            <div className="text-center mt-12">
+              <a
+                href="https://instagram.com/yourprofile"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-lg hover:from-pink-600 hover:to-purple-700 transition-transform duration-300 transform hover:-translate-y-1"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.266.058 1.85.25 2.42.49a4.92 4.92 0 0 1 2.13 1.84c.58.82.77 1.4.83 2.42.06 1.266.07 1.646.07 4.85s-.01 3.584-.07 4.85c-.06 1.02-.25 1.6-.83 2.42a4.92 4.92 0 0 1-1.84 2.13c-.82.58-1.4.77-2.42.83-1.266.06-1.646.07-4.85.07s-3.584-.01-4.85-.07c-1.02-.06-1.6-.25-2.42-.83a4.92 4.92 0 0 1-2.13-1.84c-.58-.82-.77-1.4-.83-2.42-.06-1.266-.07-1.646-.07-4.85s.01-3.584.07-4.85c.06-1.02.25-1.6.83-2.42a4.92 4.92 0 0 1 1.84-2.13c.82-.58 1.4-.77 2.42-.83 1.266-.06 1.646-.07 4.85-.07M12 0C8.74 0 8.33.015 7.05.073 5.77.13 4.87.32 4.05.64c-.82.32-1.5.79-2.13 1.42C1.29 2.7 0.82 3.37.5 4.19.18 5 .015 5.9.015 7.18.015 8.46 0 8.87 0 12s.015 3.54.073 4.82c.058 1.28.25 2.18.57 3 .32.82.79 1.5 1.42 2.13.63.63 1.31 1.1 2.13 1.42.82.32 1.72.51 3 .57 1.28.058 1.69.073 4.95.073s3.67-.015 4.95-.073c1.28-.058 2.18-.25 3-.57.82-.32 1.5-.79 2.13-1.42.63-.63 1.1-1.31 1.42-2.13.32-.82.51-1.72.57-3 0-1.28.073-1.69.073-4.95s-.015-3.67-.073-4.95c-.058-1.28-.25-2.18-.57-3-.32-.82-.79-1.5-1.42-2.13-.63-.63-1.31-1.1-2.13-1.42-.82-.32-1.72-.51-3-.57C15.67.015 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zm0 10.2a4.04 4.04 0 1 1 0-8.08 4.04 4.04 0 0 1 0 8.08zm6.41-10.8a1.44 1.44 0 1 0 0-2.88 1.44 1.44 0 0 0 0 2.88z" />
+                </svg>
+                Follow @yourinstagramprofile
+              </a>
+            </div>
+          </div>
+        </section>
+
+         {/* Explore Featured Categories Carousel */}
         <section
-          className="py-24 px-4 sm:px-12 lg:px-24 bg-[#FEFBEA]"
+          className="py-24 px-0 bg-[#FEFBEA]"
           aria-label="Explore Featured Categories Carousel"
         >
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full">
             <div className="mb-16 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-xl md:text-4xl font-bold text-gray-900 mb-4">
                 Explore Featured Categories
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              <p className="text-gray-600 max-w-xl mx-auto text-lg">
                 Discover our curated collections designed for every occasion
               </p>
             </div>
@@ -241,7 +343,7 @@ export default async function Homepage({ user }: { user: any }) {
                 ].map((cat) => (
                   <CarouselItem
                     key={cat.name}
-                    className="relative px-4 overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-700 transform hover:-translate-y-2 flex items-center h-[400px] md:h-[520px] xl:h-[650px]"
+                    className="relative px-4 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-700 transform hover:-translate-y-2 flex items-center h-[300px] md:h-[420px] xl:h-[550px]"
                     style={{ aspectRatio: "1280/650" }}
                   >
                     <img
@@ -274,78 +376,6 @@ export default async function Homepage({ user }: { user: any }) {
           </div>
         </section>
 
-        {/* Instagram Section */}
-        <section className="py-16 px-4 sm:px-8 lg:px-12 bg-gradient-to-br from-pink-50 to-purple-50">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center mr-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.266.058 1.85.25 2.42.49a4.92 4.92 0 0 1 2.13 1.84c.58.82.77 1.4.83 2.42.06 1.266.07 1.646.07 4.85s-.01 3.584-.07 4.85c-.06 1.02-.25 1.6-.83 2.42a4.92 4.92 0 0 1-1.84 2.13c-.82.58-1.4.77-2.42.83-1.266.06-1.646.07-4.85.07s-3.584-.01-4.85-.07c-1.02-.06-1.6-.25-2.42-.83a4.92 4.92 0 0 1-2.13-1.84c-.58-.82-.77-1.4-.83-2.42-.06-1.266-.07-1.646-.07-4.85s.01-3.584.07-4.85c.06-1.02.25-1.6.83-2.42a4.92 4.92 0 0 1 1.84-2.13c.82-.58 1.4-.77 2.42-.83 1.266-.06 1.646-.07 4.85-.07M12 0C8.74 0 8.33.015 7.05.073 5.77.13 4.87.32 4.05.64c-.82.32-1.5.79-2.13 1.42C1.29 2.7 0.82 3.37.5 4.19.18 5 .015 5.9.015 7.18.015 8.46 0 8.87 0 12s.015 3.54.073 4.82c.058 1.28.25 2.18.57 3 .32.82.79 1.5 1.42 2.13.63.63 1.31 1.1 2.13 1.42.82.32 1.72.51 3 .57 1.28.058 1.69.073 4.95.073s3.67-.015 4.95-.073c1.28-.058 2.18-.25 3-.57.82-.32 1.5-.79 2.13-1.42.63-.63 1.1-1.31 1.42-2.13.32-.82.51-1.72.57-3 0-1.28.073-1.69.073-4.95s-.015-3.67-.073-4.95c-.058-1.28-.25-2.18-.57-3-.32-.82-.79-1.5-1.42-2.13-.63-.63-1.31-1.1-2.13-1.42-.82-.32-1.72-.51-3-.57C15.67.015 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zm0 10.2a4.04 4.04 0 1 1 0-8.08 4.04 4.04 0 0 1 0 8.08zm6.41-10.8a1.44 1.44 0 1 0 0-2.88 1.44 1.44 0 0 0 0 2.88z" />
-                  </svg>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                  Follow us on Instagram
-                </h2>
-              </div>
-              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-                Stay updated with our latest collections, style tips, and
-                behind-the-scenes moments
-              </p>
-            </div>
-
-            {/* Instagram Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {/* Instagram posts */}
-              {[1, 2, 3, 4].map((num) => (
-                <div
-                  key={num}
-                  className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <img
-                    src={`/instagram/${num}.jpg`}
-                    alt={`Instagram post ${num}`}
-                    className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <div className="text-white">
-                      <h3 className="font-bold text-lg mb-1">Post {num}</h3>
-                      <p className="text-sm opacity-90">Description here</p>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 text-pink-700 rounded-full px-3 py-1 font-bold text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    #Tag
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Instagram CTA */}
-            <div className="text-center mt-12">
-              <a
-                href="https://instagram.com/yourprofile"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-lg hover:from-pink-600 hover:to-purple-700 transition-transform duration-300 transform hover:-translate-y-1"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.266.058 1.85.25 2.42.49a4.92 4.92 0 0 1 2.13 1.84c.58.82.77 1.4.83 2.42.06 1.266.07 1.646.07 4.85s-.01 3.584-.07 4.85c-.06 1.02-.25 1.6-.83 2.42a4.92 4.92 0 0 1-1.84 2.13c-.82.58-1.4.77-2.42.83-1.266.06-1.646.07-4.85.07s-3.584-.01-4.85-.07c-1.02-.06-1.6-.25-2.42-.83a4.92 4.92 0 0 1-2.13-1.84c-.58-.82-.77-1.4-.83-2.42-.06-1.266-.07-1.646-.07-4.85s.01-3.584.07-4.85c.06-1.02.25-1.6.83-2.42a4.92 4.92 0 0 1 1.84-2.13c.82-.58 1.4-.77 2.42-.83 1.266-.06 1.646-.07 4.85-.07M12 0C8.74 0 8.33.015 7.05.073 5.77.13 4.87.32 4.05.64c-.82.32-1.5.79-2.13 1.42C1.29 2.7 0.82 3.37.5 4.19.18 5 .015 5.9.015 7.18.015 8.46 0 8.87 0 12s.015 3.54.073 4.82c.058 1.28.25 2.18.57 3 .32.82.79 1.5 1.42 2.13.63.63 1.31 1.1 2.13 1.42.82.32 1.72.51 3 .57 1.28.058 1.69.073 4.95.073s3.67-.015 4.95-.073c1.28-.058 2.18-.25 3-.57.82-.32 1.5-.79 2.13-1.42.63-.63 1.1-1.31 1.42-2.13.32-.82.51-1.72.57-3 0-1.28.073-1.69.073-4.95s-.015-3.67-.073-4.95c-.058-1.28-.25-2.18-.57-3-.32-.82-.79-1.5-1.42-2.13-.63-.63-1.31-1.1-2.13-1.42-.82-.32-1.72-.51-3-.57C15.67.015 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zm0 10.2a4.04 4.04 0 1 1 0-8.08 4.04 4.04 0 0 1 0 8.08zm6.41-10.8a1.44 1.44 0 1 0 0-2.88 1.44 1.44 0 0 0 0 2.88z" />
-                </svg>
-                Follow @yourinstagramprofile
-              </a>
-            </div>
-          </div>
-        </section>
 
         {/* Shop The Sale Section */}
         <section className="w-full bg-gradient-to-br from-pink-200 via-white to-orange-100 py-16 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-0">

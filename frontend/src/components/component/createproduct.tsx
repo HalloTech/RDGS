@@ -61,9 +61,19 @@ export function Createproduct() {
   const [sizesAndColors,setSizesAndColors]=useState<SizersAndColorsType[]>([])
   const [images,setImages]=useState<File[]>([])
   const [otherData,setOtherData]=useState<OtherDataType>({
-    name:'',description:'',category:'',price:0,stockQuantity:0,carousel:false,most_selling_product:false,productDiscount:5,product_specification:{
-      material:'',careInstruction:''
-    } })
+    name: '',
+    description: '',
+    category: '',
+    price: 0, // Initialize with 0
+    stockQuantity: 0, // Initialize with 0
+    carousel: false,
+    most_selling_product: false,
+    productDiscount: 0, // Initialize with 0
+    product_specification: {
+      material: '',
+      careInstruction: '',
+    },
+  })
   const [selectedSizes,setSelectedSizes]=useState<Array<string>>([])
   const [isSubmiting,setIsSubmiting]=useState(false)
 
@@ -71,62 +81,66 @@ export function Createproduct() {
   
   const createNewProduct=async ()=>{
 
-    if(!otherData.name || !otherData.price || !otherData.stockQuantity || !otherData.description || sizesAndColors.length==0 || !otherData.category){
-      return toast.error('Please fill the * fields, there are required.',{duration:5000})
+    if(!otherData.name || !otherData.price){
+      return toast.error('Please fill the required fields: Product Name and Price.', { duration: 5000 });
     }
 
+    // Validate numeric inputs before submission
+    if (isNaN(otherData.price) || isNaN(otherData.stockQuantity)) {
+      toast.error('Price and Stock Quantity must be valid numbers.');
+      return;
+    }
 
     toast.promise(
-      new Promise(async(resolve,reject)=>{
+      new Promise(async (resolve, reject) => {
         try {
-          setIsSubmiting(true)
-          const data:productDataPosting={
-            name:otherData.name,
-            description:otherData.description,
-            price:otherData.price,
-            discountPercentage:otherData.productDiscount,
-            category:otherData.category,
-            stockQuantity:otherData.stockQuantity,
-            availableSizesColors:JSON.stringify(sizesAndColors),
-            isAvailable:true,
-            product_specification:otherData.product_specification,
-            carousel:otherData.carousel,
-            most_selling_product:otherData.most_selling_product
-          }
-          const formData=new FormData()
-          formData.append('data',JSON.stringify(data))
+          setIsSubmiting(true);
+          const data: productDataPosting = {
+            name: otherData.name,
+            description: otherData.description || '',
+            price: otherData.price,
+            discountPercentage: otherData.productDiscount || 0,
+            category: otherData.category || 'Uncategorized',
+            stockQuantity: otherData.stockQuantity || 0,
+            availableSizesColors: JSON.stringify(sizesAndColors),
+            isAvailable: true,
+            product_specification: otherData.product_specification || {},
+            carousel: otherData.carousel || false,
+            most_selling_product: otherData.most_selling_product || false,
+          };
+
+          const formData = new FormData();
+          formData.append('data', JSON.stringify(data));
           for (let file of images) {
-              formData.append('images[]', file, file.name);
+            formData.append('images[]', file, file.name);
           }
-          const res=await createProduct(formData)
-          if(res.status==201){
-            resolve(res.result)
 
-          }else{
-            throw Error(res.error)
+          const response = await fetch('http://localhost:5000/api/products', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to create product');
           }
-        } catch (error:any) {
-          reject(error.message)
-        }finally{
-          setIsSubmiting(false)
+
+          resolve('Product created successfully!');
+        } catch (error) {
+          console.error('Error creating product:', error);
+          reject('Failed to create product.');
+        } finally {
+          setIsSubmiting(false);
         }
-      }),{
-        error:(e)=><p>{e}</p>,
-        loading:'Loading...',
-        success:(e:any)=>{
-          setSizesAndColors([])
-          setImages([])
-          setOtherData({
-            name:'',description:'',category:'',price:0,stockQuantity:0,carousel:false,most_selling_product:false,productDiscount:5,product_specification:{
-              material:'',careInstruction:''
-            } })
-          setSelectedSizes([])
-          return<p>{e}</p>
+      }),
+      {
+        loading: 'Creating product...',
+        success: 'Product created successfully!',
+        error: 'Failed to create product.',
       }
-      },{duration:5000})
-   
-
-    // console.log(res)
+    );
   }
 
   return (

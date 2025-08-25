@@ -77,7 +77,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       500:
  *         description: Error creating product
  */
-router.post('/' , auth, role.check('admin'), upload.array('images[]', 7), async (req, res) => {
+router.post('/' , auth, role.check('admin'), upload.array('images[]', 7), async (req, res, next) => {
   try {
     let {
       name,
@@ -95,6 +95,7 @@ router.post('/' , auth, role.check('admin'), upload.array('images[]', 7), async 
 
 
    
+    
 
     if (!name || !description || !price || !category || !stockQuantity) {
       return res.status(400).json({ message: 'Missing required fields' });
@@ -149,31 +150,55 @@ router.post('/' , auth, role.check('admin'), upload.array('images[]', 7), async 
       }
     }
 
-    // Create a new product instance
-    const newProduct = new Product({
+    // Debug log: print the final product payload before saving
+    const productPayload = {
       name,
       description,
       price: Number(price),
       category,
       subCategory,
       images: imageUrls,
-      thumbnail:thumbnail,
+      thumbnail: thumbnail,
       stockQuantity: Number(stockQuantity),
       isAvailable: isAvailable === true,
       discountPercentage: Number(discountPercentage),
       tags: Array.isArray(tags) ? tags : [],
       availableSizesColors,
       ...otherDetails
-    });
+    };
+    console.log('Product payload to be saved:', JSON.stringify(productPayload, null, 2));
+    // Create a new product instance
+    const newProduct = new Product(productPayload);
 
     const savedProduct = await newProduct.save();
 
     res.status(201).json({
       message: 'Product created successfully',
-      product: savedProduct
+      product: savedProduct,
+      category: savedProduct.category
     });
   } catch (error) {
+    // Always return JSON for Unauthorized/Forbidden errors, including string errors from middleware
+    if (error && (error.status === 401 || error.status === 403)) {
+      return res.status(error.status).json({ message: error.message || 'Unauthorized' });
+    }
+    // Handle plain string errors (e.g., 'Unauthorized')
+    if (typeof error === 'string' && (error === 'Unauthorized' || error === 'Forbidden')) {
+      return res.status(401).json({ message: error });
+    }
+    // Handle error objects with message 'Unauthorized' or 'Forbidden'
+    if (error && error.message && (error.message === 'Unauthorized' || error.message === 'Forbidden')) {
+      return res.status(401).json({ message: error.message });
+    }
     console.error('Error creating product:', error);
+    // If it's a Mongoose validation error, send detailed info
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        message: 'Validation Error',
+        errors: error.errors,
+        error: error.message
+      });
+    }
     res.status(500).json({ message: 'Error creating product', error: error.message });
   }
 });

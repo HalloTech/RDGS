@@ -88,9 +88,9 @@ export default function Navbar() {
 
   // Bottom scrollable navigation categories
   const navCategories = [
-    "BESTSELLERS", "SAREE", "SALWAR KAMEEZ", "LEHENGAS", "INDO WESTERN",
-    "BLOUSE", "MEN", "GOWNS", "BRIDAL", "RAKSHA BANDHAN", "WEDDING",
-    "READY TO SHIP", "COLLECTION", "NEW", "SALE"
+    "BESTSELLERS", "SAREE", "MEN KURTA", "MEN SUITING SHIRTING","MEN COMBOS PACKS","WOMEN STICHED SUITS",
+    "WOMEN UNSTICHED SUITS", "BRIDAL", "WEDDING", "LEHNGAS", "WOMENS OTHERS", "BED SHEETS", "KIDS",
+    "CURTAINS", "BLANKETS" , "MOSQUITO NETS"
   ];
 
   const renderCategoryLink = (category: string) => {
@@ -103,7 +103,7 @@ export default function Navbar() {
         </Link>
       );
     }
-    if (category === "MEN") {
+    if (category === "BESTSELLERS") {
       return (
         <Link key={category} href="/men" prefetch={false}
           className="mx-1 px-3 py-1 rounded-lg bg-black text-white font-bold shadow"
@@ -113,7 +113,7 @@ export default function Navbar() {
         </Link>
       );
     }
-    if (category === "RAKSHA BANDHAN") {
+    if (category === "MEN COMBOS PACKS") {
       return (
         <Link key={category} href="/raksha-bandhan" prefetch={false}
           className="mx-1 px-3 py-1 rounded-lg bg-orange-500 text-white font-bold shadow"
@@ -266,7 +266,7 @@ export default function Navbar() {
         </div>
       )}
       {/* Desktop categories navigation bar */}
-      <nav className="w-full border-t border-gray-100 bg-white hidden lg:block">
+      <nav className="w-full bg-white hidden lg:block">
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide px-2 whitespace-nowrap py-1">
           {navCategories.map(renderCategoryLink)}
         </div>

@@ -5,34 +5,38 @@ import { revalidatePath } from "next/cache"
 
 export const createProduct=async(formData:FormData)=>{
     try {
-        // const parseData=JSON.parse(data) as productDataPosting
-        // const formData=new FormData()
-        // formData.append('data',JSON.stringify(parseData))
-        // for (let file of files) {
-        //     formData.append('files[]', file, file.name);
-        // }
-        const res=await fetch('http://localhost:5000/api/products',{
-            method:'POST',
-            body:formData,
-            // headers:{
-            //     'Content-Type':'multipart/form-data'
-            // }
-        })
-        
-        if(res.status==201){
-            const result=await res.json()
-            revalidatePath('/')
-            revalidatePath('/search')
-            return {result:result.message,status:201}
-        }else{
-            const error=await res.json()
-            throw new Error(error.message)
+        // Get token from cookie (server-side) or localStorage (client-side)
+        let token = '';
+        if (typeof window !== 'undefined') {
+            token = localStorage.getItem('token') || '';
+        } else {
+            // For server actions, try to get from cookies (Next.js)
+            try {
+                const { cookies } = await import('next/headers');
+                const cookie = cookies();
+                token = cookie.get('token')?.value || '';
+            } catch (e) {
+                token = '';
+            }
         }
-    } catch (error:any) {
-        console.log(error)
-        return {error:error.message,status:500}
+        const res = await fetch('http://localhost:5000/api/products', {
+            method: 'POST',
+            body: formData,
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        if (res.status == 201) {
+            const result = await res.json();
+            revalidatePath('/');
+            revalidatePath('/search');
+            return { result: result.message, status: 201 };
+        } else {
+            const error = await res.json();
+            throw new Error(error.message);
+        }
+    } catch (error: any) {
+        console.log(error);
+        return { error: error.message, status: 500 };
     }
-    
 }
 
 export const getProducts=async({limit=10,page=1}:{limit:number,page:number})=>{
